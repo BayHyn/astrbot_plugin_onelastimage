@@ -83,9 +83,9 @@
 
 #### ⚠️ 重要提示：
 
-  * 参数必须是**严格的 Python 字典**格式，包括花括号 `{}`。
-  * 布尔值必须使用 Python 语法，即 **`True`** 和 **`False`** (首字母大写)，**而不是** `true` 或 `false`。
-  * json中**不能含有空格**，这是 Astrbot 命令解析器的缺陷...
+  * 参数必须是**严格的 Json** 格式，包括花括号 `{}`以及键名必须包裹在双引号 `""` 中。
+  * 布尔值必须使用`true` 或 `false`，不能使用大写。
+  * Json 中**不能含有空格**，这是 Astrbot 命令解析器的缺陷...
 
 ### 示例
 
@@ -99,12 +99,12 @@
 
       * `(发送图片)`
 
-        `/onelast {'watermark':True,'zoom':2}`
+        `/onelast {'watermark':true,'zoom':2}`
 
 3.  **回复图片并使用自定义参数**
 
       * `(引用一条图片消息)`
 
-        `/onelast {'watermark':True,'hajimei':True}`
+        `/onelast {'watermark':true,'hajimei':true}`
 
 详细的参数用法也可以参考[**配置参数**](https://github.com/timetetng/one-last-image-api?tab=readme-ov-file#%E9%85%8D%E7%BD%AE%E5%8F%82%E6%95%B0-config-%E8%AF%A6%E8%A7%A3)。
