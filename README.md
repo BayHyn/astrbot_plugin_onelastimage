@@ -51,7 +51,9 @@
 
 在 WebUI 修改配置项
 
-添加自己的 `One Last Image API URL`, 不知道如何部署的可以查看我的这个仓库 [**one-last-image-api**](https://github.com/timetetng/one-last-image-api)
+添加自己的 `One Last Image API URL`, 不知道如何部署的可以查看我的这个项目
+
+[**如何用 Vercel 免费部署自己的 One Last Image API 后端**](https://github.com/timetetng/one-last-image-api)
 
 或者直接点击下面的按钮一键部署:
 
