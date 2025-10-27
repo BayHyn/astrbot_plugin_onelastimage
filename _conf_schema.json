@@ -1,0 +1,28 @@
+{
+  "api_url": {
+    "description": "One Last Image API 的 Vercel 部署 URL",
+    "type": "string",
+    "default": "YOUR_VERCEL_API_URL_HERE",
+    "hint": "例如：https://your-project.vercel.app/api/generate"
+  },
+  "default_params": {
+    "description": "调用 API 时的默认参数 (JSON 格式)",
+    "type": "text",
+    "default": "{\n  \"zoom\": 1,\n  \"light\": 0,\n  \"shadeLimit\": 108,\n  \"shadeLight\": 80,\n  \"shade\": true,\n  \"kuma\": true,\n  \"hajimei\": false,\n  \"watermark\": false,\n  \"convoluteName\": \"一般\",\n  \"convolute1Diff\": true,\n  \"convoluteName2\": null,\n  \"lightCut\": 128,\n  \"darkCut\": 118,\n  \"denoise\": true\n}",
+    "editor_mode": true,
+    "editor_language": "json",
+    "hint": "这是 /onelast 命令的默认配置。convoluteName2: null 是合法的。"
+  },
+  "max_images": {
+    "description": "单次调用允许处理的最大图片数量",
+    "type": "int",
+    "default": 5,
+    "hint": "防止刷屏和 API 滥用"
+  },
+  "max_file_size_mb": {
+    "description": "API 允许的单张图片最大体积 (MB)",
+    "type": "int",
+    "default": 3,
+    "hint": "插件会在本地压缩图片至此大小以下 (转为WEBP)。如果压缩后仍超标，将跳过该图片。"
+  }
+}
