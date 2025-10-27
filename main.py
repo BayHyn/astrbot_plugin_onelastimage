@@ -1,18 +1,15 @@
 import asyncio
 import json
 import io
-import ast
-import re
 import base64
-import os
 import httpx
-import tempfile
-from typing import List, Dict, Any, Optional
+from typing import List, Optional
 from PIL import Image
 from astrbot.api import logger, AstrBotConfig
 from astrbot.api.star import Context, Star, register
-from astrbot.api.event import filter, AstrMessageEvent, MessageEventResult
+from astrbot.api.event import filter, AstrMessageEvent
 import astrbot.api.message_components as Comp
+
 
 @register("astrbot_plugin_onelastimage", "timetetng", "One Last Kiss 卢浮宫风格图片生成器", "1.0", "https://github.com/timetetng/astrbot_plugin_onelastimage")
 class OneLastImagePlugin(Star):
@@ -26,16 +23,20 @@ class OneLastImagePlugin(Star):
         self.max_images = self.config.get("max_images", 5)
         self.max_file_size_mb = self.config.get("max_file_size_mb", 3)
         self.max_file_size_bytes = self.max_file_size_mb * 1024 * 1024 # 转换为字节
-        default_params_str = self.config.get("default_params") 
         
-        try:
-            self.default_params = json.loads(default_params_str)
-        except (json.JSONDecodeError, TypeError) as e:
-            if isinstance(default_params_str, dict):
-                 self.default_params = default_params_str
-            else:
-                logger.error(f"OneLastImage 插件 'default_params' 配置解析失败: {e}. (配置内容: {default_params_str})。将使用空配置。")
+        default_params_config = self.config.get("default_params") 
+        
+        if isinstance(default_params_config, dict):
+            self.default_params = default_params_config
+        elif isinstance(default_params_config, str):
+            try:
+                self.default_params = json.loads(default_params_config)
+            except json.JSONDecodeError as e:
+                logger.error(f"OneLastImage 插件 'default_params' 字符串配置解析失败: {e}. (配置内容: {default_params_config})。将使用空配置。")
                 self.default_params = {}
+        else:
+            logger.warning(f"OneLastImage 插件 'default_params' 配置类型未知 (期待 dict 或 str, 得到 {type(default_params_config)})。将使用空配置。")
+            self.default_params = {}
         
         self.client = httpx.AsyncClient()
 
@@ -139,7 +140,6 @@ class OneLastImagePlugin(Star):
 
     async def call_api(self, image_buffer: io.BytesIO, config: dict) -> Optional[bytes]:
         """
-        (需求 #1, #2)
         调用 Vercel API 并返回生成的图片字节。
         """
         files = {'image': ('image.jpg', image_buffer, 'image/jpeg')}
@@ -185,14 +185,16 @@ class OneLastImagePlugin(Star):
         if config_str:
             user_config_str = config_str.strip()
             try:
-                user_params = ast.literal_eval(user_config_str)
+                # 将 ast.literal_eval 替换为 json.loads
+                user_params = json.loads(user_config_str)
                 if not isinstance(user_params, dict):
                     raise ValueError("Input is not a dictionary")
                 # 合并配置，用户输入覆盖默认配置
                 current_config.update(user_params) 
-            except Exception as e:
+            except (json.JSONDecodeError, ValueError) as e: # 明确捕获 JSON 和 Value 错误
                 logger.warning(f"Failed to parse user config '{user_config_str}': {e}")
-                yield event.plain_result(f"参数格式错误，请提供有效的Python字典字符串，例如：\n/onelast {{'watermark':True,'hajimei':True}}")
+                # 要求严格的 JSON 格式 (键和字符串都用双引号)
+                yield event.plain_result(f"参数格式错误，请提供有效的JSON字典字符串，例如：\n/onelast {{\"watermark\":true,\"hajimei\":true}}")
                 return
 
         # 3. 处理图片
