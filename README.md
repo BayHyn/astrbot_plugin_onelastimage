@@ -1,24 +1,6 @@
 
 # astrbot_plugin_onelastimage
 
-<div align="center">
-  <a href="https://astrbot.app/" target="_blank">
-    <img src="https://github.com/user-attachments/assets/ffd99b6b-3272-4682-beaa-6fe74250f7d9" alt="AstrBot Logo" height="28" style="vertical-align: bottom;">
-  </a>
-  <a href="https://www.python.org" target="_blank">
-    <img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python" style="vertical-align: bottom;">
-  </a>
-  <a href="https://vercel.com" target="_blank">
-    <img src="https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white" alt="Vercel" style="vertical-align: bottom;">
-  </a>
-</div>
-
-**功能：** Astrbot One Last Kiss 卢浮宫风格生成器。
-
-本插件允许用户发送图片，并通过调用 One Last Image API 将其转换为 "One Last Kiss" 艺术风格的图片。
-
------
-
 <table align="center">
   <tr>
     <td align="center">
@@ -32,6 +14,24 @@
   </tr>
 </table>
 
+## Astrbot One Last Kiss 卢浮宫风格生成器
+
+**功能：** 本插件允许用户发送图片，并通过调用 One Last Image API 将其转换为 "One Last Kiss" 艺术风格的图片。
+
+
+
+
+<div align="center">
+  <a href="https://astrbot.app/" target="_blank">
+    <img src="https://github.com/user-attachments/assets/ffd99b6b-3272-4682-beaa-6fe74250f7d9" alt="AstrBot Logo" height="28" style="vertical-align: bottom;">
+  </a>
+  <a href="https://www.python.org" target="_blank">
+    <img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python" style="vertical-align: bottom;">
+  </a>
+  <a href="https://vercel.com" target="_blank">
+    <img src="https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white" alt="Vercel" style="vertical-align: bottom;">
+  </a>
+</div>
 
 
 ## 1. 安装
