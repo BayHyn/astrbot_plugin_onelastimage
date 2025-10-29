@@ -1,6 +1,9 @@
+<div align="center">
 
-# astrbot_plugin_onelastimage
+# Astrbot One Last Kiss 风格生成器
 
+</div>
+  
 <table align="center">
   <tr>
     <td align="center">
@@ -14,8 +17,9 @@
   </tr>
 </table>
 
-## Astrbot One Last Kiss 卢浮宫风格生成器
 
+# astrbot_plugin_onelastimage
+  
 **功能：** 本插件允许用户发送图片，并通过调用 One Last Image API 将其转换为 "One Last Kiss" 艺术风格的图片。
 
 
