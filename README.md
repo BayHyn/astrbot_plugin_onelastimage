@@ -47,7 +47,7 @@
 
 2.  安装本插件所需的 Python 依赖库：
     ```bash
-    uv add httpx Pillow httpx
+    uv add httpx Pillow
     ```
 3.  重启 AstrBot，插件将会自动加载。
 
