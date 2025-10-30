@@ -167,69 +167,74 @@ class OneLastImagePlugin(Star):
         /onelast - 使用默认配置
         /onelast {'hajimei':True} - 使用自定义配置
         """
-        
-        if not self.api_url:
-            yield event.plain_result("插件未配置 API URL，请联系管理员在后台配置。")
-            return
-
-        # 1. 获取图片
-        images = await self.get_image_from_direct_event(event)
-        if not images:
-            yield event.plain_result("请发送 /onelast 并附带图片，或回复一张图片。")
-            return
-
-        # 2. 解析配置
-        current_config = self.default_params.copy() 
-        
-        # 检查 config_str 是否为 None
-        if config_str:
-            user_config_str = config_str.strip()
-            try:
-                # 将 ast.literal_eval 替换为 json.loads
-                user_params = json.loads(user_config_str)
-                if not isinstance(user_params, dict):
-                    raise ValueError("Input is not a dictionary")
-                # 合并配置，用户输入覆盖默认配置
-                current_config.update(user_params) 
-            except (json.JSONDecodeError, ValueError) as e: # 明确捕获 JSON 和 Value 错误
-                logger.warning(f"Failed to parse user config '{user_config_str}': {e}")
-                # 要求严格的 JSON 格式 (键和字符串都用双引号)
-                yield event.plain_result(f"参数格式错误，请提供有效的JSON字典字符串，例如：\n/onelast {{\"watermark\":true,\"hajimei\":true}}")
+        try:
+            if not self.api_url:
+                yield event.plain_result("插件未配置 API URL，请联系管理员在后台配置。")
                 return
 
-        # 3. 处理图片
-        if len(images) > self.max_images:
-            yield event.plain_result(f"检测到 {len(images)} 张图片，超过最大数量 {self.max_images}。仅处理前 {self.max_images} 张。")
-            images = images[:self.max_images]
-        else:
-            yield event.plain_result(f"收到 {len(images)} 张图片，开始生成，请稍候...")
+            # 1. 获取图片
+            images = await self.get_image_from_direct_event(event)
+            if not images:
+                yield event.plain_result("请发送 /onelast 并附带图片，或回复一张图片。")
+                return
 
-        for i, img_comp in enumerate(images):
-            try:
-                # 4. 下载
-                image_bytes = await self.download_image(img_comp)
-                if not image_bytes:
-                    yield event.plain_result(f"第 {i+1} 张图片下载失败。")
-                    continue
-                
-                # 5. 压缩
-                image_buffer = await self.process_and_compress_image(image_bytes)
-                if not image_buffer:
-                    # 使用配置中的大小
-                    yield event.plain_result(f"第 {i+1} 张图片处理失败：压缩后仍超过 {self.max_file_size_mb}MB。")
-                    continue
-                
-                # 6. 调用 API
-                result_bytes = await self.call_api(image_buffer, current_config)
-                if result_bytes:
-                    # 将原始 bytes 编码为 base64 字符串，并使用 base64:// URI
-                    result_base64_str = base64.b64encode(result_bytes).decode('utf-8')
-                    yield event.chain_result([Comp.Image(file=f"base64://{result_base64_str}")])
-                else:
-                    yield event.plain_result(f"第 {i+1} 张图片 API 请求失败，未返回图片。")
+            # 2. 解析配置
+            current_config = self.default_params.copy() 
+            
+            # 检查 config_str 是否为 None
+            if config_str:
+                user_config_str = config_str.strip()
+                try:
+                    # 将 ast.literal_eval 替换为 json.loads
+                    user_params = json.loads(user_config_str)
+                    if not isinstance(user_params, dict):
+                        raise ValueError("Input is not a dictionary")
+                    # 合并配置，用户输入覆盖默认配置
+                    current_config.update(user_params) 
+                except (json.JSONDecodeError, ValueError) as e: # 明确捕获 JSON 和 Value 错误
+                    logger.warning(f"Failed to parse user config '{user_config_str}': {e}")
+                    # 要求严格的 JSON 格式 (键和字符串都用双引号)
+                    yield event.plain_result(f"参数格式错误，请提供有效的JSON字典字符串，例如：
+/onelast {{"watermark":true,"hajimei":true}}")
+                    return
 
-            except httpx.TimeoutException:
-                yield event.plain_result(f"第 {i+1} 张图片 API 请求超时。")
-            except Exception as e:
-                logger.error(f"Error processing image {i+1}: {e}", exc_info=True)
-                yield event.plain_result(f"第 {i+1} 张图片处理时发生未知错误: {e}")
+            # 3. 处理图片
+            if len(images) > self.max_images:
+                yield event.plain_result(f"检测到 {len(images)} 张图片，超过最大数量 {self.max_images}。仅处理前 {self.max_images} 张。")
+                images = images[:self.max_images]
+            else:
+                yield event.plain_result(f"收到 {len(images)} 张图片，开始生成，请稍候...")
+
+            for i, img_comp in enumerate(images):
+                try:
+                    # 4. 下载
+                    image_bytes = await self.download_image(img_comp)
+                    if not image_bytes:
+                        yield event.plain_result(f"第 {i+1} 张图片下载失败。")
+                        continue
+                    
+                    # 5. 压缩
+                    image_buffer = await self.process_and_compress_image(image_bytes)
+                    if not image_buffer:
+                        # 使用配置中的大小
+                        yield event.plain_result(f"第 {i+1} 张图片处理失败：压缩后仍超过 {self.max_file_size_mb}MB。")
+                        continue
+                    
+                    # 6. 调用 API
+                    result_bytes = await self.call_api(image_buffer, current_config)
+                    if result_bytes:
+                        # 将原始 bytes 编码为 base64 字符串，并使用 base64:// URI
+                        result_base64_str = base64.b64encode(result_bytes).decode('utf-8')
+                        yield event.chain_result([Comp.Image(file=f"base64://{result_base64_str}")])
+                    else:
+                        yield event.plain_result(f"第 {i+1} 张图片 API 请求失败，未返回图片。")
+
+                except httpx.TimeoutException:
+                    yield event.plain_result(f"第 {i+1} 张图片 API 请求超时。")
+                except Exception as e:
+                    logger.error(f"Error processing image {i+1}: {e}", exc_info=True)
+                    yield event.plain_result(f"第 {i+1} 张图片处理时发生未知错误: {e}")
+        except Exception as e:
+            logger.error(f"OneLastImagePlugin command failed: {e}", exc_info=True)
+            yield event.plain_result("插件运行时发生未知错误，请联系管理员查看日志。")
+            event.stop_event()
