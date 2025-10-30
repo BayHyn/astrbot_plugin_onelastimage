@@ -194,8 +194,7 @@ class OneLastImagePlugin(Star):
                 except (json.JSONDecodeError, ValueError) as e: # 明确捕获 JSON 和 Value 错误
                     logger.warning(f"Failed to parse user config '{user_config_str}': {e}")
                     # 要求严格的 JSON 格式 (键和字符串都用双引号)
-                    yield event.plain_result(f"参数格式错误，请提供有效的JSON字典字符串，例如：
-/onelast {{"watermark":true,"hajimei":true}}")
+                    yield event.plain_result(f"参数格式错误，请提供有效的JSON字典字符串，例如：\n/onelast {{\"watermark\":true,\"hajimei\":true}}")
                     return
 
             # 3. 处理图片
